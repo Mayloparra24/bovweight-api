@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import torch
 
-from app.config import DEPTH_PRO_SRC, RESOLUCION_OPTIMIZADA, DEVICE
+from app.config import DEPTH_PRO_CHECKPOINT, DEPTH_PRO_SRC, RESOLUCION_OPTIMIZADA, DEVICE
 from app.domain.protocols import DepthEstimatorProtocol
 from app.domain.schemas import DepthResult
 
@@ -22,7 +22,9 @@ class DepthProEstimator:
     ):
         self.resolution = resolution
         self.device = device
-        self.model, self.transform = depth_pro.create_model_and_transforms()
+        self.model, self.transform = depth_pro.create_model_and_transforms(
+            checkpoint_uri=DEPTH_PRO_CHECKPOINT,
+        )
         self.model = self.model.to(device).half()
         self.model.eval()
 
