@@ -1,4 +1,3 @@
-import time
 import cv2
 import numpy as np
 
@@ -15,8 +14,6 @@ class WeightEstimatorService:
         self.depth_estimator = depth_estimator
 
     def predict(self, image: np.ndarray, breed_constant: float) -> dict:
-        start_time = time.time()
-
         seg_result = self.segmenter.detect(image)
 
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -28,13 +25,10 @@ class WeightEstimatorService:
 
         estimated_weight_kg = breed_constant * (depth_result.real_area_m2 ** 1.5)
 
-        total_time = time.time() - start_time
-
         return {
             "success": True,
             "data": {
                 "peso_estimado_kg": round(estimated_weight_kg, 2),
                 "confianza_yolo": round(seg_result.confidence, 4),
-                "tiempo_total_segundos": round(total_time, 2),
             },
         }
