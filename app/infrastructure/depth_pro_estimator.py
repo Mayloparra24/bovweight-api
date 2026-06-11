@@ -22,7 +22,10 @@ class DepthProEstimator:
     ):
         self.resolution = resolution
         self.device = device
+        original_dir = os.getcwd()
+        os.chdir(os.path.dirname(DEPTH_PRO_SRC))
         self.model, self.transform = depth_pro.create_model_and_transforms()
+        os.chdir(original_dir)
         self.model = self.model.to(device).half()
         self.model.eval()
 
