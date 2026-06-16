@@ -1,34 +1,19 @@
-import cv2
 import numpy as np
 
-from app.domain.protocols import DepthEstimatorProtocol, SegmenterProtocol
+from app.domain.protocols import EstimationStrategy
+from app.domain.schemas import SegmentationResult
 
 
 class WeightEstimatorService:
-    def __init__(
+    """Contexto del patrón Strategy para estimación de peso."""
+
+    def __init__(self, strategy: EstimationStrategy):
+        self.strategy = strategy
+
+    def predict(
         self,
-        segmenter: SegmenterProtocol,
-        depth_estimator: DepthEstimatorProtocol,
-    ):
-        self.segmenter = segmenter
-        self.depth_estimator = depth_estimator
-
-    def predict(self, image: np.ndarray, breed_constant: float) -> dict:
-        seg_result = self.segmenter.detect(image)
-
-        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        depth_result = self.depth_estimator.estimate(
-            image_rgb,
-            seg_result.area_pixels,
-            seg_result.mask,
-        )
-
-        estimated_weight_kg = breed_constant * (depth_result.real_area_m2 ** 1.5)
-
-        return {
-            "success": True,
-            "data": {
-                "peso_estimado_kg": round(estimated_weight_kg, 2),
-                "confianza_yolo": round(seg_result.confidence, 4),
-            },
-        }
+        image: np.ndarray,
+        segmentation_result: SegmentationResult,
+        breed_constant: float,
+    ) -> dict:
+        return self.strategy.estimate(image, segmentation_result, breed_constant)
