@@ -6,7 +6,6 @@ import numpy as np
 @dataclass(frozen=True)
 class SegmentationResult:
     mask: np.ndarray
-    crop: np.ndarray
     area_pixels: int
     confidence: float
 

@@ -1,13 +1,24 @@
-from fastapi import FastAPI, HTTPException
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
+from app.api.dependencies import initialize_validation_chain
 from app.api.health import router as health_router
 from app.api.predict import router as predict_router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    initialize_validation_chain()
+    yield
+
 
 app = FastAPI(
     title="BovWeight CR API",
     description="Microservicio de estimacion de peso bovino con YOLOv8-seg y Depth Pro",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 app.include_router(health_router)
@@ -21,22 +32,8 @@ async def value_error_handler(_request, exc: ValueError):
         content={
             "success": False,
             "error": {
-                "code": "NO_BOVINE_DETECTED",
+                "code": "VALIDATION_ERROR",
                 "message": str(exc),
-            },
-        },
-    )
-
-
-@app.exception_handler(Exception)
-async def generic_exception_handler(_request, exc: Exception):
-    return JSONResponse(
-        status_code=500,
-        content={
-            "success": False,
-            "error": {
-                "code": "INTERNAL_ERROR",
-                "message": f"Error interno del servidor: {str(exc)}",
             },
         },
     )
