@@ -15,6 +15,8 @@ import depth_pro
 
 
 class DepthProEstimator:
+    """Adaptador del modelo Depth Pro al DepthEstimatorProtocol del dominio."""
+
     def __init__(
         self,
         resolution: int = RESOLUCION_OPTIMIZADA,

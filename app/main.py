@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 from app.api.health import router as health_router
@@ -21,22 +21,8 @@ async def value_error_handler(_request, exc: ValueError):
         content={
             "success": False,
             "error": {
-                "code": "NO_BOVINE_DETECTED",
+                "code": "VALIDATION_ERROR",
                 "message": str(exc),
-            },
-        },
-    )
-
-
-@app.exception_handler(Exception)
-async def generic_exception_handler(_request, exc: Exception):
-    return JSONResponse(
-        status_code=500,
-        content={
-            "success": False,
-            "error": {
-                "code": "INTERNAL_ERROR",
-                "message": f"Error interno del servidor: {str(exc)}",
             },
         },
     )
