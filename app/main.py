@@ -1,13 +1,24 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
+from app.api.dependencies import initialize_validation_chain
 from app.api.health import router as health_router
 from app.api.predict import router as predict_router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    initialize_validation_chain()
+    yield
+
 
 app = FastAPI(
     title="BovWeight CR API",
     description="Microservicio de estimacion de peso bovino con YOLOv8-seg y Depth Pro",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 app.include_router(health_router)

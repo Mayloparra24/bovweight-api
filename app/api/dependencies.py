@@ -11,7 +11,8 @@ _service = None
 _chain = None
 
 
-def get_validation_chain() -> ValidationHandler:
+def initialize_validation_chain() -> ValidationHandler:
+    """Carga modelos y construye la cadena de validación al arrancar."""
     global _yolo_segmenter, _depth_estimator, _strategy, _service, _chain
 
     if _chain is None:
@@ -24,4 +25,10 @@ def get_validation_chain() -> ValidationHandler:
             service=_service,
         )
 
+    return _chain
+
+
+def get_validation_chain() -> ValidationHandler:
+    if _chain is None:
+        initialize_validation_chain()
     return _chain
